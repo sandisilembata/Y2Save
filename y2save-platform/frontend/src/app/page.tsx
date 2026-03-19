@@ -81,14 +81,17 @@ export default function HomePage() {
             <p className="text-gray-600 mb-4">
               Your video download is ready. Click the button below to start.
             </p>
-            <a
-              href={downloadLink}
-              download
-              target="_blank"
-              rel="noopener noreferrer"
+            <Button
+              onClick={() => {
+                const link = document.createElement('a')
+                link.href = downloadLink
+                link.download = 'video.mp4'
+                link.target = '_blank'
+                link.click()
+              }}
             >
-              <Button as="span">Start Download</Button>
-            </a>
+              Start Download
+            </Button>
             <p className="text-xs text-gray-500 mt-2">
               Link expires in 1 hour
             </p>
