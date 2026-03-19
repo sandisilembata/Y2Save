@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: y2save-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: y2save-backend
+  template:
+    metadata:
+      labels:
+        app: y2save-backend
+    spec:
+      containers:
+      - name: backend
+        image: y2save-backend:latest
+        ports:
+        - containerPort: 3001
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3001"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: y2save-secrets
+              key: database-url
+        - name: REDIS_URL
+          value: "redis://redis-service:6379"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: y2save-secrets
+              key: jwt-secret
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3001
+          initialDelaySeconds: 10
+          periodSeconds: 5
